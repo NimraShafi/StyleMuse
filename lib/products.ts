@@ -119,26 +119,33 @@ export async function searchProducts(query: string): Promise<Product[]> {
 }
 
 export async function getCategories() {
-  const products = await getProducts();
-  const categoryMap = new Map<
-    string,
-    { id: string; name: string; count: number; image: string }
-  >();
+  try {
+    const products = await getProducts();
+    const categoryMap = new Map<
+      string,
+      { id: string; name: string; count: number; image: string }
+    >();
 
-  products.forEach((product) => {
-    if (!categoryMap.has(product.category)) {
-      const name =
-        product.category.charAt(0).toUpperCase() + product.category.slice(1);
-      const image = `/images/category-${product.category}.jpg`;
-      categoryMap.set(product.category, {
-        id: product.category,
-        name,
-        count: 0,
-        image,
-      });
-    }
-    categoryMap.get(product.category)!.count++;
-  });
+    products.forEach((product) => {
+      if (!categoryMap.has(product.category)) {
+        const name =
+          product.category.charAt(0).toUpperCase() + product.category.slice(1);
+        const image = `/images/category-${product.category}.jpg`;
+        categoryMap.set(product.category, {
+          id: product.category,
+          name,
+          count: 0,
+          image,
+        });
+      }
+      categoryMap.get(product.category)!.count++;
+    });
 
-  return Array.from(categoryMap.values());
+    const categories = Array.from(categoryMap.values());
+
+    return categories;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
 }
